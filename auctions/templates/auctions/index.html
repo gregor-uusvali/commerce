@@ -1,0 +1,47 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div style="display: flex; align-items: center;">
+        <h2>Active Listings</h2>
+        <div style="max-width: 200px; margin-left: 15px;">
+            <form action="{% url 'view_category' %}" method="POST">
+                {% csrf_token %}
+                <div style="display: flex; align-items: center;">
+                    <select id="category" name="category" class="form-control">
+                        <option value="" selected="true" disabled="true">Category</option>
+                        {% for category in categorys %}
+                            <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                    <button style="margin-left: 10px;" type="submit" class="btn btn-primary">Select</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <ul style="list-style:none;">
+        {% for listing in listings %}
+            <a style="text-decoration: none !important; color: black" href="{% url 'item' id=listing.id %}">
+                <li  class="list-listing">
+                    <div style="margin-top: 10px; padding:10px; border: 1px solid gray; border-radius: 5px; max-width: 1000px; display:flex;">
+                        <div>
+                            <img style="margin-right: 20px;" src="{{ listing.img }}" width="250"/>
+                        </div>
+                        <div>
+                            <h3>{{ listing.title }}</h3>
+                            <hr>
+                            {{ listing.description }}
+                            <hr>
+                            <div style="display:flex;">
+                                <div style="font-weight:bold; margin-right: 5px;">Price:</div>${{ listing.price.bid }}
+                            </div>
+                            <hr>
+                            <div style="color:gray">
+                                Created: {{ listing.creation_date}}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </a>
+        {% endfor %}
+    </ul>
+{% endblock %}

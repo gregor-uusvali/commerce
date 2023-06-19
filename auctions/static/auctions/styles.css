@@ -1,0 +1,10 @@
+body {
+    padding: 10px;
+    overflow-x: hidden;
+}
+
+.list-listing { transition: all .2s ease-in-out; }
+
+.list-listing:hover{
+    transform: scale(1.02);
+}
