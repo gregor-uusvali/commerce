@@ -82,30 +82,58 @@ def createListing(request):
     if request.method == "GET":
         currentUser = request.user
         items = currentUser.watchlist.all()
-        counter = 0
-        for i in items:
-            counter += 1
+        counter = len(items)
         get_categorys = Category.objects.all()
         return render(request, "auctions/create_listing.html", {
             "categorys": get_categorys,
             "counter": counter
         })
     else:
-        #get the date from the form
         title = request.POST["title"]
         description = request.POST["description"]
         price = request.POST["price"]
         img = request.POST["img"]
-        category = request.POST["category"]
         currentUser = request.user
-        categoryData = Category.objects.get(cat=category)
-        #create a bid object
+
+        # Check if any input field is empty
+        if not title or not description or not price or not img:
+            error_message = "All fields are required."
+            get_categorys = Category.objects.all()
+            return render(request, "auctions/create_listing.html", {
+                "categorys": get_categorys,
+                "counter": 0,
+                "error_message": error_message
+            })
+
+        if 'category' in request.POST:
+            category = request.POST["category"]
+            try:
+                categoryData = Category.objects.get(cat=category)
+            except Category.DoesNotExist:
+                categoryData = None
+                error_message = "Invalid category selected."
+                get_categorys = Category.objects.all()
+                return render(request, "auctions/create_listing.html", {
+                    "categorys": get_categorys,
+                    "counter": 0,
+                    "error_message": error_message
+                })
+        else:
+            categoryData = None
+            error_message = "Category is required."
+            get_categorys = Category.objects.all()
+            return render(request, "auctions/create_listing.html", {
+                "categorys": get_categorys,
+                "counter": 0,
+                "error_message": error_message
+            })
+
         bid = Bid(bid=float(price), user=currentUser)
         bid.save()
-        #create neww listing
         listing = Listings(title=title, price=bid, description=description, listing_creator=currentUser, img=img, category=categoryData)
         listing.save()
         return HttpResponseRedirect(reverse("index"))
+
 
 def viewCategory(request):
     if request.method == "POST":

@@ -1,36 +1,58 @@
-{% extends "auctions/layout.html" %}
-
-{% block body %}
-    <h2>Create New Listing</h2>
-    <form action="{% url 'create_listing' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group" style="border:1px solid gray; border-radius: 5px; padding: 10px; width: 60%;">
-            <label for="title">Title:</label>
-            <br>
-            <input type="text" name="title" class="form-control" id="title">
-            <br>
-            <label for="description">Description:</label>
-            <br>
-            <input type="text" name="description" class="form-control" id="description">
-            <br>
-            <label for="price">Price:</label>
-            <br>
-            <input type="number" name="price" class="form-control" id="price">
-            <br>
-            <label for="img">Image url:</label>
-            <br>
-            <input type="text" name="img" class="form-control" id="img" placeholder="ex: https://www.example.com/image/example.jpg">
-            <br>
-            <label for="category">Category:</label>
-            <br>
-            <select id="category" name="category" class="form-control">
-                <option value="" selected="true" disabled="true">--Please choose an option--</option>
-                {% for category in categorys %}
-                    <option value="{{ category }}">{{ category }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <input class="btn btn-primary" type="submit" value="Submit">
-        </div>
-    </form>
+{% extends "auctions/layout.html" %} {% block body %}
+<h2>Create New Listing</h2>
+<form action="{% url 'create_listing' %}" method="post">
+  {% csrf_token %}
+  <div
+    class="form-group"
+    style="
+      border: 1px solid gray;
+      border-radius: 5px;
+      padding: 10px;
+      width: 60%;
+    "
+  >
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+    {% endif %}
+    <label for="title">Title:</label>
+    <br />
+    <input type="text" name="title" class="form-control" id="title" />
+    <br />
+    <label for="description">Description:</label>
+    <br />
+    <input
+      type="text"
+      name="description"
+      class="form-control"
+      id="description"
+    />
+    <br />
+    <label for="price">Price:</label>
+    <br />
+    <input type="number" name="price" class="form-control" id="price" />
+    <br />
+    <label for="img">Image url:</label>
+    <br />
+    <input
+      type="text"
+      name="img"
+      class="form-control"
+      id="img"
+      placeholder="ex: https://www.example.com/image/example.jpg"
+    />
+    <br />
+    <label for="category">Category:</label>
+    <br />
+    <select id="category" name="category" class="form-control">
+      <option value="" selected="true" disabled="true">
+        --Please choose an option--
+      </option>
+      {% for category in categorys %}
+      <option value="{{ category }}">{{ category }}</option>
+      {% endfor %}
+    </select>
+    <br />
+    <input class="btn btn-primary" type="submit" value="Submit" />
+  </div>
+</form>
 {% endblock %}
