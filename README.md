@@ -34,7 +34,7 @@ Run app from the command line. You must have all the dependencies installed (sql
 ```
 $ ./run.sh
 ```
-
+[Demo](http://176.112.158.18:8090/)
 ### Forum users for testing
 
 Testuser `ork1:ork123` <br/>
