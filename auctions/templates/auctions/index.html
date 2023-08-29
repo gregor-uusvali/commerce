@@ -8,7 +8,7 @@
                 {% csrf_token %}
                 <div style="display: flex; align-items: center;">
                     <select id="category" name="category" class="form-control">
-                        <option value="" selected="true" disabled="true">Category</option>
+                        <option value="all" selected="true">All</option>
                         {% for category in categorys %}
                             <option value="{{ category }}">{{ category }}</option>
                         {% endfor %}

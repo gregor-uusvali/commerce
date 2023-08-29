@@ -4,11 +4,11 @@
 
     <h2>Register</h2>
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
+    
     <form action="{% url 'register' %}" method="post" style="border:1px solid gray; border-radius: 5px; padding: 10px; width: 60%;">
+        {% if message %}
+            <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endif %}
         {% csrf_token %}
         <div class="form-group">
             <input class="form-control" autofocus type="text" name="username" placeholder="Username">

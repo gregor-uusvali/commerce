@@ -1,7 +1,9 @@
+import os
+from django.conf import LazySettings, settings
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from .models import User, Category, Listings, Comment, Bid
@@ -61,10 +63,15 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
+            error_message = "Passwords must match."
             return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
+                "message": error_message
             })
-
+        if username == "" or email == "" or password == "" or confirmation == "":
+            error_message = "All fields must be filled."
+            return render(request, "auctions/register.html", {
+                "message": error_message
+            })
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
@@ -92,7 +99,7 @@ def createListing(request):
         title = request.POST["title"]
         description = request.POST["description"]
         price = request.POST["price"]
-        img = request.POST["img"]
+        img = request.FILES.get("img")
         currentUser = request.user
 
         # Check if any input field is empty
@@ -127,10 +134,20 @@ def createListing(request):
                 "counter": 0,
                 "error_message": error_message
             })
+        
+        # Construct the destination path where the image will be saved
+        destination_path = os.path.join(settings.MEDIA_ROOT, "images", img.name)
+        print(destination_path)
+        
+
+        # Open the destination file in binary write mode and save the image
+        with open(destination_path, "wb") as destination_file:
+            for chunk in img.chunks():
+                destination_file.write(chunk)
 
         bid = Bid(bid=float(price), user=currentUser)
         bid.save()
-        listing = Listings(title=title, price=bid, description=description, listing_creator=currentUser, img=img, category=categoryData)
+        listing = Listings(title=title, price=bid, description=description, listing_creator=currentUser, img=os.path.join("http://127.0.0.1:8000/media/images", img.name), category=categoryData)
         listing.save()
         return HttpResponseRedirect(reverse("index"))
 
@@ -138,8 +155,11 @@ def createListing(request):
 def viewCategory(request):
     if request.method == "POST":
         category_selected = request.POST["category"]
-        category = Category.objects.get(cat=category_selected)
-        get_active_listings = Listings.objects.filter(active=True, category=category)
+        if category_selected == "all":
+            get_active_listings = Listings.objects.filter(active=True)
+        else:
+            category = Category.objects.get(cat=category_selected)
+            get_active_listings = Listings.objects.filter(active=True, category=category)
         return render(request, "auctions/index.html", {
             "listings": get_active_listings,
             "categorys": Category.objects.all()
